@@ -5,7 +5,6 @@ import (
 	"Ecommerce-Product/model"
 	"Ecommerce-Product/repository"
 	"github.com/mashingan/smapping"
-	"log"
 	"time"
 )
 
@@ -42,14 +41,21 @@ func (ps *productService) GetProductsByIDSeller(idSeller int) []model.Product {
 
 func (ps *productService) CreateProduct(dto dto.NewProductDTO) model.Product {
 	productDTOToModel := model.Product{}
-	log.Println("dto", dto)
+
 	err := smapping.FillStruct(&productDTOToModel, smapping.MapFields(&dto))
-	log.Println("productDTOToModel", productDTOToModel)
 	if err != nil {
 		return model.Product{
 			ID: 0,
 		}
 	}
+
+	productDTOToModel.Nama = dto.Nama
+	productDTOToModel.Harga = dto.Harga
+	productDTOToModel.Stok = dto.Stok
+	productDTOToModel.Deskripsi = dto.Deskripsi
+	productDTOToModel.Gambar = dto.Gambar
+	productDTOToModel.IDPenjual = dto.IDPenjual
+
 	productDTOToModel.CreatedAt = time.Now()
 	productDTOToModel.UpdatedAt = time.Now()
 	return ps.productRepository.CreateProduct(productDTOToModel)

@@ -20,6 +20,9 @@ func main() {
 	defer conn.CloseDatabaseConnection(db)
 	router := gin.Default()
 
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+	router.Static("/images", "./images")
+
 	routes := router.Group("/api/product")
 	{
 		routes.GET("/", productController.GetProducts)

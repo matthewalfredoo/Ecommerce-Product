@@ -6,8 +6,11 @@ import (
 	"Ecommerce-Product/model"
 	"Ecommerce-Product/service"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type ProductController interface {
@@ -71,6 +74,38 @@ func (p *productController) CreateProduct(context *gin.Context) {
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
+
+	/* Handling Files */
+	file, header, err := context.Request.FormFile("gambarfile")
+	log.Println(header.Filename)
+
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 0", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	nama := strings.Trim(newProductDTO.Nama, " ")
+	tempFile, err := ioutil.TempFile("images", nama+"-*.png")
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 3", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	defer tempFile.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 4", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	tempFile.Write(fileBytes)
+
+	nama = strings.Trim(tempFile.Name(), "images\\")
+	nama = strings.Trim(nama, ".pn")
+	newProductDTO.Gambar = nama + ".png"
+	/* End of Handling Files */
 
 	newProduct := p.productService.CreateProduct(newProductDTO)
 	if newProduct.ID == 0 {
