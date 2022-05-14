@@ -31,8 +31,8 @@ func NewProductController(productService service.ProductService) ProductControll
 
 func (p *productController) GetProducts(context *gin.Context) {
 	products := p.productService.GetProducts()
-	res := helper.BuildResponse(true, "Products retrieved successfully", products)
-	context.JSON(http.StatusOK, res)
+	// res := helper.BuildResponse(true, "Products retrieved successfully", products)
+	context.JSON(http.StatusOK, products)
 }
 
 func (p *productController) GetProduct(context *gin.Context) {
@@ -45,8 +45,8 @@ func (p *productController) GetProduct(context *gin.Context) {
 	}
 
 	product := p.productService.GetProduct(idInt)
-	res := helper.BuildResponse(true, "Product retrieved successfully", product)
-	context.JSON(http.StatusOK, res)
+	// res := helper.BuildResponse(true, "Product retrieved successfully", product)
+	context.JSON(http.StatusOK, product)
 }
 
 func (p *productController) GetProductsByIDSeller(context *gin.Context) {
@@ -59,8 +59,8 @@ func (p *productController) GetProductsByIDSeller(context *gin.Context) {
 	}
 
 	products := p.productService.GetProductsByIDSeller(idSellerInt)
-	res := helper.BuildResponse(true, "Products retrieved successfully", products)
-	context.JSON(http.StatusOK, res)
+	// res := helper.BuildResponse(true, "Products retrieved successfully", products)
+	context.JSON(http.StatusOK, products)
 }
 
 func (p *productController) CreateProduct(context *gin.Context) {
