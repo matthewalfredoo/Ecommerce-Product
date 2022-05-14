@@ -44,9 +44,7 @@ func (ps *productService) CreateProduct(dto dto.NewProductDTO) model.Product {
 
 	err := smapping.FillStruct(&productDTOToModel, smapping.MapFields(&dto))
 	if err != nil {
-		return model.Product{
-			ID: 0,
-		}
+		return model.Product{}
 	}
 
 	productDTOToModel.Nama = dto.Nama
@@ -65,9 +63,7 @@ func (ps *productService) UpdateProduct(id int, dto dto.UpdateProductDTO) model.
 	productDTOToModel := model.Product{}
 	err := smapping.FillStruct(&productDTOToModel, smapping.MapFields(&dto))
 	if err != nil {
-		return model.Product{
-			ID: 0,
-		}
+		return model.Product{}
 	}
 	productDTOToModel.UpdatedAt = time.Now()
 	return ps.productRepository.UpdateProduct(id, productDTOToModel)

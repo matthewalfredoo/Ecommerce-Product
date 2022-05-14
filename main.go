@@ -7,6 +7,7 @@ import (
 	"Ecommerce-Product/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"os"
 )
 
 var (
@@ -33,8 +34,8 @@ func main() {
 		routes.DELETE("/:id", productController.DeleteProduct)
 	}
 
-	err := router.Run("192.168.100.8:8081")
+	err := router.Run(os.Getenv("BASE_URL_PRODUCT"))
 	if err != nil {
-		return
+		panic(err)
 	}
 }

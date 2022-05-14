@@ -109,7 +109,7 @@ func (p *productController) CreateProduct(context *gin.Context) {
 
 	newProduct := p.productService.CreateProduct(newProductDTO)
 	if newProduct.ID == 0 {
-		res := helper.BuildErrorResponse("Error creating product", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Error creating product", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
@@ -125,14 +125,14 @@ func (p *productController) UpdateProduct(context *gin.Context) {
 	var updateProductDTO dto.UpdateProductDTO
 	err = context.ShouldBind(&updateProductDTO)
 	if err != nil {
-		res := helper.BuildErrorResponse("Invalid product data", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Invalid product data", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 
 	updatedProduct := p.productService.UpdateProduct(idInt, updateProductDTO)
 	if updatedProduct.ID == 0 {
-		res := helper.BuildErrorResponse("Error updating product", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Error updating product", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
@@ -146,7 +146,7 @@ func (p *productController) DeleteProduct(context *gin.Context) {
 	idInt, err := strconv.Atoi(id)
 
 	if err != nil {
-		res := helper.BuildErrorResponse("Invalid product id", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Invalid product id", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 	}
 
