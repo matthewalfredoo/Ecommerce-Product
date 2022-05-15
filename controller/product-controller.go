@@ -6,8 +6,11 @@ import (
 	"Ecommerce-Product/model"
 	"Ecommerce-Product/service"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type ProductController interface {
@@ -72,9 +75,41 @@ func (p *productController) CreateProduct(context *gin.Context) {
 		return
 	}
 
+	/* Handling Files */
+	file, header, err := context.Request.FormFile("gambarfile")
+	log.Println(header.Filename)
+
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 0", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	nama := strings.Trim(newProductDTO.Nama, " ")
+	tempFile, err := ioutil.TempFile("images", nama+"-*.png")
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 3", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	defer tempFile.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		res := helper.BuildErrorResponse("Invalid product image 4", err.Error(), model.Product{})
+		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	tempFile.Write(fileBytes)
+
+	nama = strings.Trim(tempFile.Name(), "images\\")
+	nama = strings.Trim(nama, ".pn")
+	newProductDTO.Gambar = nama + ".png"
+	/* End of Handling Files */
+
 	newProduct := p.productService.CreateProduct(newProductDTO)
 	if newProduct.ID == 0 {
-		res := helper.BuildErrorResponse("Error creating product", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Error creating product", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
@@ -90,14 +125,14 @@ func (p *productController) UpdateProduct(context *gin.Context) {
 	var updateProductDTO dto.UpdateProductDTO
 	err = context.ShouldBind(&updateProductDTO)
 	if err != nil {
-		res := helper.BuildErrorResponse("Invalid product data", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Invalid product data", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 
 	updatedProduct := p.productService.UpdateProduct(idInt, updateProductDTO)
 	if updatedProduct.ID == 0 {
-		res := helper.BuildErrorResponse("Error updating product", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Error updating product", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
@@ -111,7 +146,7 @@ func (p *productController) DeleteProduct(context *gin.Context) {
 	idInt, err := strconv.Atoi(id)
 
 	if err != nil {
-		res := helper.BuildErrorResponse("Invalid product id", "Error", model.Product{})
+		res := helper.BuildErrorResponse("Invalid product id", err.Error(), model.Product{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
 	}
 

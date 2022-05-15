@@ -51,9 +51,6 @@ func (db *productConnection) UpdateProduct(id int, product model.Product) model.
 	var productUpdate model.Product
 	db.connection.First(&productUpdate, id)
 
-	if productUpdate.Nama != product.Nama {
-		productUpdate.Nama = product.Nama
-	}
 	if productUpdate.Harga != product.Harga {
 		productUpdate.Harga = product.Harga
 	}
@@ -62,9 +59,6 @@ func (db *productConnection) UpdateProduct(id int, product model.Product) model.
 	}
 	if productUpdate.Deskripsi != product.Deskripsi {
 		productUpdate.Deskripsi = product.Deskripsi
-	}
-	if productUpdate.Gambar != product.Gambar {
-		productUpdate.Gambar = product.Gambar
 	}
 
 	db.connection.Save(&productUpdate)
